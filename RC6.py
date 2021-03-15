@@ -63,7 +63,7 @@ for count in range(3 * c):  # Формирование раундового кл
 # print(W)
 
 # Шифрование
-message = "уууу  бля"  # Сообщение
+message = "уууу  qqqq"  # Сообщение
 print("MESSAGE: ", message)
 message_bit = ba.bitarray()  # Инициализация массива битов
 message_bit.frombytes(message.encode('utf-8'))  # Сообщение в битах
