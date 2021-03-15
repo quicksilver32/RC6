@@ -45,15 +45,15 @@ def encode(message_bit, Key, w, r):
 
     # Дополнение сообщения нулями до кратности в 4w
     while len(message_bit) % (4 * w) != 0:
-        message_bit.insert(0, 0)
+        message_bit = "0" + message_bit
 
     encoded_message_bit = ""  # Инициализация зашифрованного сообщения
 
     for i in range(0, len(message_bit), 4 * w):  # Цикл по блокам в 4 слова
-        A = int(message_bit[i:i + w].to01(), 2)
-        B = int(message_bit[i + w:i + 2 * w].to01(), 2)
-        C = int(message_bit[i + 2 * w:i + 3 * w].to01(), 2)
-        D = int(message_bit[i + 3 * w:i + 4 * w].to01(), 2)
+        A = int('0b' + message_bit[i:i + w], 2)
+        B = int('0b' + message_bit[i + w:i + 2 * w], 2)
+        C = int('0b' + message_bit[i + 2 * w:i + 3 * w], 2)
+        D = int('0b' + message_bit[i + 3 * w:i + 4 * w], 2)
 
         B = mod(B + W[0], 2 ** w)
         D = mod(D + W[1], 2 ** w)
@@ -72,7 +72,7 @@ def encode(message_bit, Key, w, r):
         encoded_message_bit += bin_expansion(bin(A), w)[2:] + bin_expansion(bin(B), w)[2:] + \
                                bin_expansion(bin(C), w)[2:] + bin_expansion(bin(D), w)[2:]
 
-        return encoded_message_bit
+    return encoded_message_bit
 
 
 def decode(encoded_message_bit, Key, w, r):
@@ -80,7 +80,7 @@ def decode(encoded_message_bit, Key, w, r):
 
     # Дополнение сообщения нулями до кратности в 4w
     while len(encoded_message_bit) % (4 * w) != 0:
-        encoded_message_bit.insert(0, 0)
+        encoded_message_bit = "0" + encoded_message_bit
 
     decoded_message_bit = ""
     for i in range(0, len(encoded_message_bit), 4 * w):
@@ -108,4 +108,4 @@ def decode(encoded_message_bit, Key, w, r):
         decoded_message_bit += bin_expansion(bin(A), w)[2:] + bin_expansion(bin(B), w)[2:] + \
                                bin_expansion(bin(C), w)[2:] + bin_expansion(bin(D), w)[2:]
 
-        return decoded_message_bit
+    return decoded_message_bit

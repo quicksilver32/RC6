@@ -1,7 +1,6 @@
 import sys
 from PyQt5 import QtWidgets
-from utils import *
-# from RC6_GUI import *
+from RC6_GUI import *
 import design
 
 
@@ -16,7 +15,6 @@ class ExampleApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         self.decodeButton.clicked.connect(self.decode_file)
 
     def browse_file(self):
-        # self.decodeButton.setDisabled(True)
         file = QtWidgets.QFileDialog.getOpenFileUrl(self, "Choose file")
 
         if file:
@@ -28,27 +26,38 @@ class ExampleApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         bytes_read = open(self.fileLabel.text(), "rb").read()
         bits_read = bytesToBin(bytes_read)
         secret_key = self.secretKeyBox.text()
-        w = self.blockSize.currentText()
+        w = int(self.blockSize.currentText())
         r = self.roundsBox.value()
-        # encoded_bits = encode(bits_read, secret_key, w, r)
+        print(bits_read)
+        try:
+            encoded_bits = encode(bits_read, secret_key, w, r)
+            self.bitsTextArea.setPlainText(encoded_bits)
+        except Exception as e:
+            print(e)
+            # msgBox = QtWidgets.QMessageBox()
+            # msgBox.setIcon(QtWidgets.QMessageBox.Information)
+            # msgBox.setText(str(e))
+            # msgBox.setWindowTitle("Error")
+            # msgBox.setStandardButtons(QtWidgets.QMessageBox.Ok)
 
     def decode_file(self):
-        encoded_bits = self.bitsLabel.text()
+        encoded_bits = self.bitsTextArea.toPlainText()
         secret_key = self.secretKeyBox.text()
-        w = self.blockSize.currentText()
+        w = int(self.blockSize.currentText())
         r = self.roundsBox.value()
-        # decoded_bits = decode(encoded_bits, secret_key, w, r)
-        extension = "." + self.fileLabel.text().split(".")[-1]
-        file_url = QtWidgets.QFileDialog.getSaveFileName(self, "Save File", "", extension)
-        print(file_url[0] + file_url[1])
-        with open(file_url[0] + file_url[1], "wb") as file:
-            file.write(bytes("test", encoding="utf-8"))
-        self.decodeButton.setDisabled(True)
-        self.encodeButton.setDisabled(True)
-        self.secretKeyBox.setText("")
-        self.bitsLabel.setText("")
-        self.fileLabel.setText("")
-
+        try:
+            decoded_bits = decode(encoded_bits, secret_key, w, r)
+            extension = "." + self.fileLabel.text().split(".")[-1]
+            file_url = QtWidgets.QFileDialog.getSaveFileName(self, "Save File", "", extension)
+            with open(file_url[0] + file_url[1], "wb") as file:
+                file.write(binToBytes(decoded_bits))
+            self.decodeButton.setDisabled(True)
+            self.encodeButton.setDisabled(True)
+            self.secretKeyBox.setText("")
+            self.bitsTextArea.setPlainText("")
+            self.fileLabel.setText("")
+        except Exception as e:
+            print(e)
 
 
 def main():
