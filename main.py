@@ -4,7 +4,7 @@ from RC6_GUI import *
 import design
 
 
-class ExampleApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
+class ExampleApp(QtWidgets.QMainWindow, design.Ui_RC6):
     def __init__(self):
         super().__init__()
         self.setupUi(self)

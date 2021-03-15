@@ -11,19 +11,19 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_MainWindow(object):
-    def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(583, 479)
-        MainWindow.setMinimumSize(QtCore.QSize(583, 479))
-        MainWindow.setMaximumSize(QtCore.QSize(583, 479))
-        self.centralwidget = QtWidgets.QWidget(MainWindow)
+class Ui_RC6(object):
+    def setupUi(self, RC6):
+        RC6.setObjectName("RC6")
+        RC6.resize(583, 479)
+        RC6.setMinimumSize(QtCore.QSize(583, 479))
+        RC6.setMaximumSize(QtCore.QSize(583, 479))
+        self.centralwidget = QtWidgets.QWidget(RC6)
         self.centralwidget.setObjectName("centralwidget")
         self.chooseFileButton = QtWidgets.QPushButton(self.centralwidget)
         self.chooseFileButton.setGeometry(QtCore.QRect(10, 10, 121, 41))
         self.chooseFileButton.setObjectName("chooseFileButton")
         self.fileLabel = QtWidgets.QLabel(self.centralwidget)
-        self.fileLabel.setGeometry(QtCore.QRect(140, 20, 111, 21))
+        self.fileLabel.setGeometry(QtCore.QRect(140, 20, 431, 21))
         self.fileLabel.setText("")
         self.fileLabel.setObjectName("fileLabel")
         self.encodeButton = QtWidgets.QPushButton(self.centralwidget)
@@ -37,6 +37,8 @@ class Ui_MainWindow(object):
         self.secretKeyLabel.setObjectName("secretKeyLabel")
         self.secretKeyBox = QtWidgets.QLineEdit(self.centralwidget)
         self.secretKeyBox.setGeometry(QtCore.QRect(80, 70, 211, 20))
+        self.secretKeyBox.setInputMask("")
+        self.secretKeyBox.setMaxLength(32767)
         self.secretKeyBox.setObjectName("secretKeyBox")
         self.blockSizeLabel = QtWidgets.QLabel(self.centralwidget)
         self.blockSizeLabel.setGeometry(QtCore.QRect(310, 70, 71, 21))
@@ -52,6 +54,8 @@ class Ui_MainWindow(object):
         self.roundsLabel.setObjectName("roundsLabel")
         self.roundsBox = QtWidgets.QSpinBox(self.centralwidget)
         self.roundsBox.setGeometry(QtCore.QRect(520, 70, 42, 22))
+        self.roundsBox.setMinimum(1)
+        self.roundsBox.setProperty("value", 20)
         self.roundsBox.setObjectName("roundsBox")
         self.bitsTextArea = QtWidgets.QPlainTextEdit(self.centralwidget)
         self.bitsTextArea.setGeometry(QtCore.QRect(80, 120, 481, 271))
@@ -59,21 +63,21 @@ class Ui_MainWindow(object):
         self.bitsLabel = QtWidgets.QLabel(self.centralwidget)
         self.bitsLabel.setGeometry(QtCore.QRect(10, 120, 71, 16))
         self.bitsLabel.setObjectName("bitsLabel")
-        MainWindow.setCentralWidget(self.centralwidget)
+        RC6.setCentralWidget(self.centralwidget)
 
-        self.retranslateUi(MainWindow)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        self.retranslateUi(RC6)
+        QtCore.QMetaObject.connectSlotsByName(RC6)
 
-    def retranslateUi(self, MainWindow):
+    def retranslateUi(self, RC6):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.chooseFileButton.setText(_translate("MainWindow", "Choose File"))
-        self.encodeButton.setText(_translate("MainWindow", "Encode"))
-        self.decodeButton.setText(_translate("MainWindow", "Decode"))
-        self.secretKeyLabel.setText(_translate("MainWindow", "Secret Key:"))
-        self.blockSizeLabel.setText(_translate("MainWindow", "Block size: 4 x "))
-        self.blockSize.setItemText(0, _translate("MainWindow", "16"))
-        self.blockSize.setItemText(1, _translate("MainWindow", "32"))
-        self.blockSize.setItemText(2, _translate("MainWindow", "64"))
-        self.roundsLabel.setText(_translate("MainWindow", "Rounds:"))
-        self.bitsLabel.setText(_translate("MainWindow", "Encoded file"))
+        RC6.setWindowTitle(_translate("RC6", "RC6"))
+        self.chooseFileButton.setText(_translate("RC6", "Choose File"))
+        self.encodeButton.setText(_translate("RC6", "Encode"))
+        self.decodeButton.setText(_translate("RC6", "Decode"))
+        self.secretKeyLabel.setText(_translate("RC6", "Secret Key:"))
+        self.blockSizeLabel.setText(_translate("RC6", "Block size: 4 x "))
+        self.blockSize.setItemText(0, _translate("RC6", "16"))
+        self.blockSize.setItemText(1, _translate("RC6", "32"))
+        self.blockSize.setItemText(2, _translate("RC6", "64"))
+        self.roundsLabel.setText(_translate("RC6", "Rounds:"))
+        self.bitsLabel.setText(_translate("RC6", "Encoded file"))
