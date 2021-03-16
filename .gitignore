@@ -1,2 +1,3 @@
 /venv
-/.ui
+*.ui
+/RC6_old.py
