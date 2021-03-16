@@ -108,4 +108,8 @@ def decode(encoded_message_bit, Key, w, r):
         decoded_message_bit += bin_expansion(bin(A), w)[2:] + bin_expansion(bin(B), w)[2:] + \
                                bin_expansion(bin(C), w)[2:] + bin_expansion(bin(D), w)[2:]
 
+    decoded_message_bit = decoded_message_bit.lstrip("0")
+    while len(decoded_message_bit) % 8:
+        decoded_message_bit = "0" + decoded_message_bit
+
     return decoded_message_bit

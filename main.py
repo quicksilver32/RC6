@@ -22,6 +22,7 @@ class ExampleApp(QtWidgets.QMainWindow, design.Ui_RC6):
         self.chooseFileButton.clicked.connect(self.browse_file)
         self.encodeButton.clicked.connect(self.encode_file)
         self.decodeButton.clicked.connect(self.decode_file)
+        self.bitsTextArea.setDisabled(True)
 
     def browse_file(self):
         file = QtWidgets.QFileDialog.getOpenFileUrl(self, "Choose file")
@@ -42,6 +43,7 @@ class ExampleApp(QtWidgets.QMainWindow, design.Ui_RC6):
             return
         try:
             encoded_bits = encode(bits_read, secret_key, w, r)
+            self.bitsTextArea.setDisabled(False)
             self.bitsTextArea.setPlainText(encoded_bits)
         except Exception as e:
             show_message(e)
@@ -62,6 +64,7 @@ class ExampleApp(QtWidgets.QMainWindow, design.Ui_RC6):
             self.secretKeyBox.setText("")
             self.bitsTextArea.setPlainText("")
             self.fileLabel.setText("")
+            self.bitsTextArea.setDisabled(True)
         except Exception as e:
             show_message(e)
 
