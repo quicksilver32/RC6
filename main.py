@@ -4,6 +4,15 @@ from RC6_GUI import *
 import design
 
 
+def show_message(message):
+    msgBox = QtWidgets.QMessageBox()
+    msgBox.setIcon(QtWidgets.QMessageBox.Information)
+    msgBox.setText(str(message))
+    msgBox.setWindowTitle("Info")
+    msgBox.setStandardButtons(QtWidgets.QMessageBox.Ok)
+    msgBox.exec_()
+
+
 class ExampleApp(QtWidgets.QMainWindow, design.Ui_RC6):
     def __init__(self):
         super().__init__()
@@ -28,17 +37,14 @@ class ExampleApp(QtWidgets.QMainWindow, design.Ui_RC6):
         secret_key = self.secretKeyBox.text()
         w = int(self.blockSize.currentText())
         r = self.roundsBox.value()
-        print(bits_read)
+        if secret_key == "":
+            show_message("Type Secret Key")
+            return
         try:
             encoded_bits = encode(bits_read, secret_key, w, r)
             self.bitsTextArea.setPlainText(encoded_bits)
         except Exception as e:
-            print(e)
-            # msgBox = QtWidgets.QMessageBox()
-            # msgBox.setIcon(QtWidgets.QMessageBox.Information)
-            # msgBox.setText(str(e))
-            # msgBox.setWindowTitle("Error")
-            # msgBox.setStandardButtons(QtWidgets.QMessageBox.Ok)
+            show_message(e)
 
     def decode_file(self):
         encoded_bits = self.bitsTextArea.toPlainText()
@@ -57,7 +63,7 @@ class ExampleApp(QtWidgets.QMainWindow, design.Ui_RC6):
             self.bitsTextArea.setPlainText("")
             self.fileLabel.setText("")
         except Exception as e:
-            print(e)
+            show_message(e)
 
 
 def main():
