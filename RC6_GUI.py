@@ -1,4 +1,4 @@
-import bitarray as ba
+import base64
 import math
 from utils import *
 
@@ -7,11 +7,11 @@ Qw = {16: 0x9e37, 32: 0x9e3779b9, 64: 0x9e3779b97f4a7c15}
 
 
 def generate_round_key(Key, w, r):
-    #  Пребразование ключа в биты
-    Key_bit = ba.bitarray()
-    Key_bit.frombytes(Key.encode('utf-8'))
-    while len(Key_bit) % w != 0:
-        Key_bit.insert(0, 0)
+    Key_bit = base64.b64encode(bytes(Key, 'utf-8'))
+    Key_bit = bytesToBin(Key_bit)  # Преобразование ключа в биты
+
+    while len(Key_bit) % w != 0:  # Дополнение ключа до кратности w
+        Key_bit = "0" + Key_bit
     l = int(len(Key_bit) / 8)
 
     # Формирование раундового ключа
@@ -22,7 +22,7 @@ def generate_round_key(Key, w, r):
     # Преобразование ключа в массив из с слов
     L = []
     for i in range(c):
-        L.append(int(Key_bit[i:i + w].to01(), 2))
+        L.append(int(Key_bit[i:i + w], 2))
 
     for i in range(2 * r + 4 - 1):  # Инициализация массива раундовых ключей
         W.append(mod((W[-1] + Qw[w]), (2 ** w)))
