@@ -40,7 +40,7 @@ def generate_round_key(Key, w, r):
     return W
 
 
-def encode(message_bit, Key, w, r):
+def encode_ECB(message_bit, Key, w, r):
     W = generate_round_key(Key, w, r)
 
     # Дополнение сообщения нулями до кратности в 4w
@@ -75,7 +75,7 @@ def encode(message_bit, Key, w, r):
     return encoded_message_bit
 
 
-def decode(encoded_message_bit, Key, w, r):
+def decode_ECB(encoded_message_bit, Key, w, r):
     W = generate_round_key(Key, w, r)
 
     # Дополнение сообщения нулями до кратности в 4w
@@ -107,6 +107,112 @@ def decode(encoded_message_bit, Key, w, r):
         D = mod(D - W[1], 2 ** w)
         decoded_message_bit += bin_expansion(bin(A), w)[2:] + bin_expansion(bin(B), w)[2:] + \
                                bin_expansion(bin(C), w)[2:] + bin_expansion(bin(D), w)[2:]
+
+    decoded_message_bit = decoded_message_bit.lstrip("0")
+    while len(decoded_message_bit) % 8:
+        decoded_message_bit = "0" + decoded_message_bit
+
+    return decoded_message_bit
+
+
+def encode_CBC(message_bit, Key, w, r, init):
+    W = generate_round_key(Key, w, r)
+
+    # Дополнение сообщения нулями до кратности в 4w
+    while len(message_bit) % (4 * w) != 0:
+        message_bit = "0" + message_bit
+
+    encoded_message_bit = ""  # Инициализация зашифрованного сообщения
+
+    init = base64.b64encode(bytes(init, 'utf-8'))
+    init = bytesToBin(init)[:4 * w]  # Преобразование инициализирующего вектора в биты
+
+    while len(init) % (4 * w) != 0:
+        init = "0" + init  # Дополнение нулями до кратности в 4w
+
+    synchro_package = init  # Синхропосылка для закодирования
+
+    for i in range(0, len(message_bit), 4 * w):  # Цикл по блокам в 4 слова
+        temp = message_bit[i: i + 4 * w]
+        temp = bin_expansion(bin(XOR(int("0b" + temp, 2), int("0b" + synchro_package, 2))), 4 * w)[
+               2:]  # Сложение по модулю 2 с кодируемым блоком
+
+        A = int('0b' + temp[:w], 2)
+        B = int('0b' + temp[w:2 * w], 2)
+        C = int('0b' + temp[2 * w:3 * w], 2)
+        D = int('0b' + temp[3 * w:4 * w], 2)
+
+        B = mod(B + W[0], 2 ** w)
+        D = mod(D + W[1], 2 ** w)
+
+        for i in range(1, r + 1):
+            t = circular_shift(f(B, w), w, int(math.log(w)), "left")
+            u = circular_shift(f(D, w), w, int(math.log(w)), "left")
+            A = mod((circular_shift(XOR(A, t), w, u, 'left') + W[2 * i]), (2 ** w))
+            C = mod((circular_shift(XOR(C, u), w, t, 'left') + W[2 * i + 1]), (2 ** w))
+
+            aa, bb, cc, dd = B, C, D, A
+            A, B, C, D = aa, bb, cc, dd
+
+        A = mod(A + W[2 * r + 2], 2 ** w)
+        C = mod(C + W[2 * r + 3], 2 ** w)
+
+        synchro_package = bin_expansion(bin(A), w)[2:] + bin_expansion(bin(B), w)[2:] + \
+                          bin_expansion(bin(C), w)[2:] + bin_expansion(bin(D), w)[2:]  # Переопределение синхропосылки
+
+        encoded_message_bit += synchro_package
+
+    return encoded_message_bit
+
+
+def decode_CBC(encoded_message_bit, Key, w, r, init):
+    W = generate_round_key(Key, w, r)
+
+    # Дополнение сообщения нулями до кратности в 4w
+    while len(encoded_message_bit) % (4 * w) != 0:
+        encoded_message_bit = "0" + encoded_message_bit
+
+    decoded_message_bit = ""
+
+    init = base64.b64encode(bytes(init, 'utf-8'))
+    init = bytesToBin(init)[:4 * w]  # Преобразование инициализирующего вектора в биты
+
+    while len(init) % (4 * w) != 0:
+        init = "0" + init  # Дополнение нулями до кратности в 4w
+
+    synchro_package = init  # Синхропосылка для закодирования
+
+    for i in range(0, len(encoded_message_bit), 4 * w):
+        temp = encoded_message_bit[i: i + 4 * w]  # Запоминание декодируемого блока
+
+        A = int('0b' + temp[:w], 2)
+        B = int('0b' + temp[w:2 * w], 2)
+        C = int('0b' + temp[2 * w:3 * w], 2)
+        D = int('0b' + temp[3 * w:4 * w], 2)
+
+        A = mod(A - W[2 * r + 2], 2 ** w)
+        C = mod(C - W[2 * r + 3], 2 ** w)
+
+        for j in range(1, r + 1):
+            i = r - j + 1
+
+            aa, bb, cc, dd = D, A, B, C
+            A, B, C, D = aa, bb, cc, dd
+
+            t = circular_shift(f(B, w), w, int(math.log(w)), "left")
+            u = circular_shift(f(D, w), w, int(math.log(w)), "left")
+            A = XOR(circular_shift(mod((A - W[2 * i]), 2 ** w), w, u, 'right'), t)
+            C = XOR(circular_shift(mod((C - W[2 * i + 1]), (2 ** w)), w, t, 'right'), u)
+
+        B = mod(B - W[0], 2 ** w)
+        D = mod(D - W[1], 2 ** w)
+
+        output = bin_expansion(bin(A), w)[2:] + bin_expansion(bin(B), w)[2:] + \
+                 bin_expansion(bin(C), w)[2:] + bin_expansion(bin(D), w)[2:]  # Раскодированый блок
+
+        decoded_message_bit += bin_expansion(bin(XOR(int("0b" + synchro_package, 2), int("0b" + output, 2))), 4 * w)[2:]
+
+        synchro_package = temp  # Переопределение синхропосылки
 
     decoded_message_bit = decoded_message_bit.lstrip("0")
     while len(decoded_message_bit) % 8:
